@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Notes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  font-family: "Courier New", monospace;
+  background:#fafafa;
+  color:#222;
+  padding:20px;
+}
+.hidden { display:none; }
+textarea,input { width:100%; padding:8px; margin:5px 0; }
+button { padding:8px 14px; margin:5px 0; }
+#chat,#poems { border:1px solid #ccc; padding:10px; margin-top:15px; }
+h2,h3 { font-weight:normal; }
+.small { font-size:12px; color:#777; }
+</style>
+</head>
+<body>
+
+<h2>📘 Mathematics Notes</h2>
+
+<div id="login1">
+  <input type="password" id="p1" placeholder="Equation Key">
+  <button onclick="step1()">Verify</button>
+</div>
+
+<div id="login2" class="hidden">
+  <input type="password" id="p2" placeholder="Constant Value">
+  <button onclick="step2()">Enter</button>
+</div>
+
+<div id="app" class="hidden">
+
+<h3>Encrypted Section</h3>
+
+<div id="chat">
+  <b>Notes / Messages</b>
+  <div id="chatBox"></div>
+  <input id="chatInput" placeholder="Write…">
+  <button onclick="send()">Save</button>
+</div>
+
+<div id="poems">
+  <b>Stored Data</b>
+  <textarea id="poemInput" placeholder="Write hidden text…"></textarea>
+  <button onclick="savePoem()">Encrypt & Store</button>
+  <div id="poemBox"></div>
+</div>
+
+<p class="small">Local encrypted storage enabled</p>
+
+</div>
+
+<script>
+const pass1="hwiwarada";
+const pass2="👍👍👍";
+
+function step1(){
+  if(p1.value===pass1){
+    login1.classList.add("hidden");
+    login2.classList.remove("hidden");
+  } else alert("Invalid");
+}
+function step2(){
+  if(p2.value===pass2){
+    login2.classList.add("hidden");
+    app.classList.remove("hidden");
+    load();
+  } else alert("Invalid");
+}
+
+function enc(t){
+  return btoa([...t].map(c=>String.fromCharCode(c.charCodeAt(0)+3)).join(""));
+}
+function dec(t){
+  return [...atob(t)].map(c=>String.fromCharCode(c.charCodeAt(0)-3)).join("");
+}
+
+function send(){
+  let data=localStorage.getItem("chat")||"";
+  data+=enc(chatInput.value)+"||";
+  localStorage.setItem("chat",data);
+  chatInput.value="";
+  load();
+}
+function savePoem(){
+  let data=localStorage.getItem("poems")||"";
+  data+=enc(poemInput.value)+"||";
+  localStorage.setItem("poems",data);
+  poemInput.value="";
+  load();
+}
+function load(){
+  chatBox.innerHTML="";
+  poemBox.innerHTML="";
+  (localStorage.getItem("chat")||"").split("||").forEach(x=>{
+    if(x){ chatBox.innerHTML+="<div>"+dec(x)+"</div>"; }
+  });
+  (localStorage.getItem("poems")||"").split("||").forEach(x=>{
+    if(x){ poemBox.innerHTML+="<p>"+dec(x)+"</p>"; }
+  });
+}
+</script>
+
+</body>
+</html>
